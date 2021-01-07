@@ -298,7 +298,7 @@ void ProcessTP()
 {
    string sOrderOp   = TransactionOpMnem(OrderType());
    string sMsg       = StringFormat(
-                     "%s %s ➡ %s\n ➡TP: %s\n ✖️SL: %s\n",
+                     "%s %s - Hit TP!\n%s ➡️ %s\n%d pips ✅",
                      sOrderOp,
                      OrderSymbol(),
                      DoubleToString(OrderOpenPrice(), Digits),
@@ -314,7 +314,7 @@ void ProcessSL()
 {
    string sOrderOp   = TransactionOpMnem(OrderType());
    string sMsg       = StringFormat(
-                     "%s %s - Hit SL!\n%s -> %s\n%d pips :x:",
+                     "%s %s - Hit SL!\n%s ➡️ %s\n%d pips ❌",
                      sOrderOp,
                      OrderSymbol(),
                      DoubleToString(OrderOpenPrice(), Digits),
@@ -330,7 +330,7 @@ void ProcessSL()
 void ProcessManualClose()
 {
    string sOrderOp   = TransactionOpMnem(OrderType());
-   string sEmoji     = OrderProfit() > 0 ? ":white_check_mark:" : ":x:"; // OrderProfit() is net value -> does not calculate swaps or commissions
+   string sEmoji     = OrderProfit() > 0 ? "✅" : "❌"; // OrderProfit() is net value -> does not calculate swaps or commissions
    string sMsg       = StringFormat(
                      "%s %s - Manual Order Close\n%s -> %s\n%d pips %s",
                      sOrderOp,
@@ -348,7 +348,7 @@ void ProcessBuy()
 {
    string sOrderOp   = TransactionOpMnem(OrderType()); 
    string sMsg       = StringFormat(
-                     "%s %s :arrow_right::door: %s\n:dart:TP: %s\n:heavy_multiplication_x:SL: %s\n",
+                     "%s %s ➡️ %s\n ➡️TP: %s\n ✖️SL: %s\n",
                      sOrderOp,
                      OrderSymbol(),
                      DoubleToString(OrderOpenPrice(), Digits),
