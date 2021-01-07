@@ -298,7 +298,7 @@ void ProcessTP()
 {
    string sOrderOp   = TransactionOpMnem(OrderType());
    string sMsg       = StringFormat(
-                     "%s %s ➡ %s\n ➡TP: %s\n ✖️SL: %s\n",
+                     "%s %s - Hit TP!\n%s -> %s\n%d pips ✅",
                      sOrderOp,
                      OrderSymbol(),
                      DoubleToString(OrderOpenPrice(), Digits),
@@ -348,7 +348,7 @@ void ProcessBuy()
 {
    string sOrderOp   = TransactionOpMnem(OrderType()); 
    string sMsg       = StringFormat(
-                     "%s %s :arrow_right::door: %s\n:dart:TP: %s\n:heavy_multiplication_x:SL: %s\n",
+                     "%s %s ➡ %s\n ➡TP: %s\n ✖️SL: %s\n",
                      sOrderOp,
                      OrderSymbol(),
                      DoubleToString(OrderOpenPrice(), Digits),
