@@ -298,7 +298,7 @@ void ProcessTP()
 {
    string sOrderOp   = TransactionOpMnem(OrderType());
    string sMsg       = StringFormat(
-                     "%s %s - Hit TP!\n%s -> %s\n%d pips :white_check_mark:",
+                     "%s %s ➡ %s\n ➡TP: %s\n ✖️SL: %s\n",
                      sOrderOp,
                      OrderSymbol(),
                      DoubleToString(OrderOpenPrice(), Digits),
