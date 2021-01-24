@@ -1,26 +1,27 @@
-﻿// inspiration from https://github.com/dennislwm/MT4-Telegram-Bot-Recon
+// inspiration from https://github.com/dennislwm/MT4-Telegram-Bot-Recon
 // emoji unicode: https://www.unicode.org/emoji/charts/full-emoji-list.html
 // pip calculation: https://mql4tradingautomation.com/mql4-pips-normalization/
 
 #property copyright     "Erik A. (Minimum Delta)"
 #property link          "minimumdelta@gmail.com"
-#property version       "1.1"
+#property version       "1.2"
 #property description   "BE ADVISED: Error logging is printed in the 'Experts' terminal tab.\nLive trading permission is not required for this bot.\nChannel name must start with '@' and is case-sensitive.\n\nMinimum tick-rate is 30ms, recommended tick-rate is between 100ms and 1000ms (1 second)."
 #property strict
 #include <Telegram.mqh>
 
 //--- input parameters
-input string InpChannelName      = "@MuffinPips";  // Channel Name (Case-Sensitive)
-input string InpToken            = "ENTER KEY HERE"; // Bot API Token (Case-Sensitive)
-input int    InpTickRate         = 1000;           // Internal Update Interval (Milliseconds)
-input string InpNotificationAcc  = "";             // MetaQuotes Account ID for Notifications
+input string InpChannelName      = "@MuffinPips";     // Channel Name (Case-Sensitive)
+input string InpToken            = "ENTER KEY HERE";  // Bot API Token (Case-Sensitive)
+input int    InpTickRate         = 1000;              // Internal Update Interval (Milliseconds)
+input string InpNotificationAcc  = "";                // MetaQuotes Account ID for Notifications
+input bool   InpDisableTelegram  = false;             // Broadcast Only To Log
 //-- end input parameters
 
 //--- global variables -> all initialized in SetUp function
 int g_anPreviousOpenOrders[];
 int g_anClosedOrderTickets[];
 int g_anOpenedOrderTickets[];
-CCustomBot bot;               // TODO rename this g_cBot
+CCustomBot g_pBot;
 //-- end global variables
 
 //--- required functions
@@ -39,12 +40,25 @@ int deinit()
 
 void BroadcastTelegramMsg(string sMsg)
 {
-   bot.SendMessage(InpChannelName, sMsg);
+   if (InpDisableTelegram)
+   {
+      Print(sMsg);
+   }
+   else
+   {
+      g_pBot.SendMessage(InpChannelName, sMsg);
+   }
 }
 
 bool ConnectTelegramBot()
 {
-   bot.Token(InpToken);
+   if (InpDisableTelegram)
+   {
+      Print("Telegram broadcasting disabled, not connecting to telegram bot..");
+      return true;
+   }
+   
+   g_pBot.Token(InpToken);
    
    Print("Connecting to telegram bot..");
    
@@ -58,11 +72,11 @@ bool ConnectTelegramBot()
    }
    else
    {
-      int result = bot.GetMe();
+      int result = g_pBot.GetMe();
    
       if(result == 0)
       {
-         PrintFormat("Connected to telegram bot. Bot name: %s.", bot.Name());
+         PrintFormat("Connected to telegram bot. Bot name: %s.", g_pBot.Name());
          return true;
       }
       else
@@ -301,8 +315,8 @@ void ProcessTP()
                      "%s %s - Hit TP!\n%s ➡️ %s\n%d pips ✅",
                      sOrderOp,
                      OrderSymbol(),
-                     DoubleToString(OrderOpenPrice(), Digits),
-                     DoubleToString(OrderOpenPrice(), Digits),
+                     DoubleToString(OrderOpenPrice(), 5),
+                     DoubleToString(OrderTakeProfit(), 5),
                      CalculatePipDifference()
                   );
 
@@ -317,8 +331,8 @@ void ProcessSL()
                      "%s %s - Hit SL!\n%s ➡️ %s\n%d pips ❌",
                      sOrderOp,
                      OrderSymbol(),
-                     DoubleToString(OrderOpenPrice(), Digits),
-                     DoubleToString(OrderStopLoss(), Digits),
+                     DoubleToString(OrderOpenPrice(), 5),
+                     DoubleToString(OrderStopLoss(), 5),
                      CalculatePipDifference()
                   );
    
@@ -335,8 +349,8 @@ void ProcessManualClose()
                      "%s %s - Manual Order Close\n%s -> %s\n%d pips %s",
                      sOrderOp,
                      OrderSymbol(),
-                     DoubleToString(OrderOpenPrice(), Digits),
-                     DoubleToString(OrderClosePrice(), Digits),
+                     DoubleToString(OrderOpenPrice(), 5),
+                     DoubleToString(OrderClosePrice(), 5),
                      CalculatePipDifference(),
                      sEmoji
                   );
@@ -351,9 +365,9 @@ void ProcessBuy()
                      "%s %s ➡️ %s\n ➡️TP: %s\n ✖️SL: %s\n",
                      sOrderOp,
                      OrderSymbol(),
-                     DoubleToString(OrderOpenPrice(), Digits),
-                     DoubleToString(OrderTakeProfit(), Digits),
-                     DoubleToString(OrderStopLoss(), Digits)
+                     DoubleToString(OrderOpenPrice(), 5),
+                     DoubleToString(OrderTakeProfit(), 5),
+                     DoubleToString(OrderStopLoss(), 5)
                   );
 
    BroadcastTelegramMsg(sMsg);
